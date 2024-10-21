@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, DollarSign, Users, Briefcase } from 'lucide-react';
+import { Search, Filter, DollarSign, Users, Briefcase, X } from 'lucide-react';
 
 const collaborations = [
   {
@@ -34,12 +34,32 @@ const collaborations = [
 
 const Marketplace = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCollab, setSelectedCollab] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredCollaborations = collaborations.filter(collab =>
     collab.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     collab.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
     collab.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleApply = (collab) => {
+    setSelectedCollab(collab);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedCollab(null);
+  };
+
+  const submitApplication = (e) => {
+    e.preventDefault();
+    // Here you would typically send the application data to your backend
+    console.log('Application submitted for:', selectedCollab.title);
+    closeModal();
+    // You can add a success message or notification here
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -82,12 +102,72 @@ const Marketplace = () => {
                 {collab.category}
               </span>
             </div>
-            <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200">
+            <button 
+              onClick={() => handleApply(collab)}
+              className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200"
+            >
               Apply Now
             </button>
           </div>
         ))}
       </div>
+
+      {isModalOpen && selectedCollab && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Apply for Collaboration</h2>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700">
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <form onSubmit={submitApplication}>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="proposal" className="block text-sm font-medium text-gray-700 mb-1">
+                  Your Proposal
+                </label>
+                <textarea
+                  id="proposal"
+                  name="proposal"
+                  rows={4}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors duration-200"
+              >
+                Submit Application
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
